@@ -21,6 +21,3 @@ stop_value = int(input("Enter end value: "))
 
 for output in range(start_value, stop_value + 1):
     print(output)
-
-
-
