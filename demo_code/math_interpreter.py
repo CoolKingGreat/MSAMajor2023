@@ -1,7 +1,7 @@
-expression = input("Enter a math expression: ")
-x = float(expression.split(" ")[0])
-y = expression.split(" ")[1]
-z = float(expression.split(" ")[2])
+expression_list = input("Enter a math expression: ").split()
+x = float(expression_list[0])
+y = expression_list[1]
+z = float(expression_list[2])
 result = 0
 if y == "+":
     result = x+z
