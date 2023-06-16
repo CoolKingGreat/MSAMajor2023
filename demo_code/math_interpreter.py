@@ -6,10 +6,25 @@ def main():
             print("Error: Invalid Format")
             continue
  
-        x = float(expression_list[0])
-        y = expression_list[1]
-        z = float(expression_list[2])
         result = 0
+
+
+        y = expression_list[1]
+        try:
+            x = float(expression_list[0])
+            z = float(expression_list[2])
+        except ValueError:
+            print("Error: Invalid Numbers")
+            continue
+
+        if y not in ["+", "-", "*", "/"]:
+            print("Error: Invalid Operator")
+            continue
+            
+        if z == 0:
+            print("Error: Divide by Zero")
+            continue
+        
         if y == "+":
             result = x+z
         elif y == "-":
@@ -17,10 +32,8 @@ def main():
         elif y == "*":
             result = x*z
         elif y == "/":
-            if z == 0:
-                print("Error: Divide by Zero")
-                continue
             result = x/z
+
         print(f"{result:.1f}")
         
         another_calculation = input("Would you like to evaluate another expression? Press 'y': ").lower()
