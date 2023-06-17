@@ -32,6 +32,10 @@ def main():
                 print("ERROR: Incorret operator. Only (+, -, *, /) allowed.\n")
                 continue
 
+            if z == 0:
+                print("ERROR: Divide by zero")
+                continue
+
             break
 
         # Determine the type of operation to carry out. Using if/elif/else statement
