@@ -1,10 +1,13 @@
 #ask the user if they want to continue. If y, continue. If n end
 #Incorrect operator format
 #X or Z are not numbers
-#Expression not in correct format. Has more than 3 parts  
+#Expression not in correct format. Has more than 3 parts
 
-
-
+"""
+Function to get valid expression inputs from user
+Inputs: None
+Outputs: (int)number1, (int)number2, (string)operator
+"""
 def get_valid_expression_inputs():
     while True:
         # Prompt the user for the expression
@@ -32,35 +35,38 @@ def get_valid_expression_inputs():
             print("ERROR: Incorret operator. Only (+, -, *, /) allowed.\n")
             continue
 
-        if z == 0:
-            print("ERROR: Divide by zero")
-            continue
-
         break
+    
+    return x, z, operator  
 
-    return x,z, operator
-
-def evaluate_expression(x, z, operator):
-    if operator == "+":
-        answer = x + z
-    elif operator == "-":
-        answer = x - z
-    elif operator == "*":
-        answer = x * z
+"""
+Function to evaluate expression
+Inputs: (int)x, (int)z, (string)operator
+Output: (int)answer
+"""
+def evaluate_expression(number1, number2, symbol):
+    # Determine the type of operation to carry out. Using if/elif/else statement
+    if symbol == "+":
+        answer = number1 + number2
+    elif symbol == "-":
+        answer = number1 - number2
+    elif symbol == "*":
+        answer = number1 * number2
     else:
-        answer = x / z
-
+        answer = number1 / number2
+    
     return answer
 
 def main():
     while True:
 
+        #call get_valid_expression_inputs function to get the x, x, and operatorer values
         x, z, operator = get_valid_expression_inputs()
 
-        # Determine the type of operation to carry out. Using if/elif/else statement
+        # Call evaluate_expression to get the answer for the expression
         answer = evaluate_expression(x, z, operator)
-        # run the expression and print output formatted t one decimal place
-
+        
+        # run the expression and print output formatted to one decimal place
         print(f"{answer:.1f}")
 
         #Ask user if the want to continue

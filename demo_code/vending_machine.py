@@ -1,15 +1,27 @@
+
 def main():
+
+    #assign amount due
     amount_due = 50
+
     while amount_due > 0:
+        #Display the amount due
         print(f"Amount Due: {amount_due}")
-        coin_chosen = 0
-        try:
-            coin_chosen = int(input("Insert Coin:\n"))
-            if coin_chosen not in [1, 5, 10, 25]:
-                continue
-            amount_due -= coin_chosen
-        except ValueError:
+
+        #Prompt the user to enter a coin
+        coin = input("\nEnter Coin: ")
+
+        #Validate coin amount and reprompt user if not valid value
+        if coin not in ["1", "5", "10", "25"]:
             continue
-    print(f"Change Owed: {0-amount_due}")
+
+        #convert coin to integer
+        #coin = int(coin)
+
+        #update amount due value amount_due = amount_due - coin
+        amount_due -= int(coin)
+
+    print(f"Change Owed: {amount_due * -1}")
 
 main()
+
