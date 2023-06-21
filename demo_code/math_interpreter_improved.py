@@ -20,7 +20,6 @@ def get_valid_expression_inputs():
         if len(expression_list) != 3:
             print("ERROR: Enter Expression in (X Y Z)format\n")
             continue
-
         # Get values from list
         try:
             x = int(expression_list[0])
@@ -70,7 +69,7 @@ def main():
         print(f"{answer:.1f}")
 
         #Ask user if the want to continue
-        another_calculation = input("Would you like to evaluate another expression? Press y to continue or any other key to exit: ").lower()
+        another_calculation = input("Would you like to eavluate another expression? Press y to continue or any other key to exit: ").lower()
         
         #Determin the value of another_claculation and if we should break or not
         if another_calculation != "y":
