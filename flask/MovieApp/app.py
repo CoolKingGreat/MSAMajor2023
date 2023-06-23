@@ -74,12 +74,44 @@ def actors():
     actor_info = {}
     for post in posts:
         if post['name'] not in actor_info.keys():
-            actor_info[post['name']] = []    
-        actor_info[post['name']].append(post['title'])
-    print(actor_info)
+            actor_info[post['name']] = post['title']
+        else:
+            actor_info[post['name']] += ", "+post['title']
     conn.close() 
     #send the posts to the index.html template to be displayed
     return render_template('actors.html', actor_info=actor_info, posts=posts)
+
+@app.route('/director/<name>/', methods=('GET', 'POST'))
+def director(name):
+    if request.method == "POST":
+        return redirect(url_for('index'))
+    
+    conn = get_db_connection()
+    posts = conn.execute('SELECT * FROM "movies" WHERE director=? ORDER BY imdb_score DESC', (name, )).fetchall()
+    conn.close() 
+    return render_template('director.html', name=name, posts=posts)
+
+@app.route('/movie/<int:id>/', methods=('GET', 'POST'))
+def movie(id):
+    if request.method == "POST":
+        return redirect(url_for('index'))
+    
+    conn = get_db_connection()
+    movie = conn.execute('SELECT * FROM "movies" WHERE id=? ORDER BY imdb_score DESC', (id, )).fetchone()
+    conn.close() 
+    return render_template('movie.html', movie=movie)
+
+@app.route('/delete/<int:id>', methods=('POST',))
+def delete(id):
+    #get post id
+    conn = get_db_connection()
+    conn.execute('DELETE FROM movies WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
+
+    #redirect to the index page
+    return redirect(url_for('index'))
+
 
 #run the flask
 app.run(host="0.0.0.0")
