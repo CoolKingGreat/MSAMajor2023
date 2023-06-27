@@ -28,7 +28,15 @@ def index():
         stock_chosen = request.form['stock_ticker']
         chart_type = request.form['chart_type']
         time_series = request.form['time_series']
-        if chart_type = "Bar":
+        start_date = request.form['start_date']
+        end_date = request.form['end_date']
+
+        prev_info = [stock_chosen, chart_type, time_series, start_date, end_date]
+
+        if not (stock_chosen or chart_type or time_series or start_date or end_date):
+            return render_template("index.html", tickers=tickers, alert="Enter all values")
+
+        if chart_type == "Bar":
             chart = pygal.Bar()
         else:
             chart = pygal.Line()
@@ -44,50 +52,76 @@ def index():
             data = r.json()
             stock_info = data["Time Series (Daily)"]
         elif time_series == "Weekly":
-            url = f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={stock_chosen}&apikey='+av_api_key
+            url = f'https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol={stock_chosen}&apikey='+av_api_key
             r = requests.get(url)
             data = r.json()
-            stock_info = data["Time Series (Daily)"]
+            stock_info = data["Weekly Time Series"]
         elif time_series == "Monthly":
-            pass
-
-    if request.method == 'POSTs':
-        url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=GOOGL&interval=15min&apikey='+av_api_key
-        r = requests.get(url)
-        data = r.json()
-        stock_info = data["Time Series (15min)"]
+            url = f'https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={stock_chosen}&apikey='+av_api_key
+            r = requests.get(url)
+            data = r.json()
+            stock_info = data["Monthly Time Series"]
+        
         time_info = []
         open_info = []
-        counter = 0
+        high_info = []
+        low_info = []
+        close_info = []
+        
         for key in stock_info:
             time_info.insert(0, key)
             open_info.insert(0, float(stock_info[key]['1. open']))
-            counter += 1
-            if counter == 11:
-                break
-
-        print(time_info)
-        print(open_info)
-
-        line_chart = pygal.Line()
-        line_chart.title = 'GOOGL'
-        line_chart.x_labels = time_info
-        line_chart.add('Open', open_info)
-
-        chart = line_chart.render_data_uri()
+            high_info.insert(0, float(stock_info[key]['2. high']))
+            low_info.insert(0, float(stock_info[key]['3. low']))
+            close_info.insert(0, float(stock_info[key]['4. close']))
 
 
-        """
-        line_chart = pygal.Line()
-        line_chart.title = 'Browser usage evolution (in %)'
-        line_chart.x_labels = map(str, range(2002, 2013))
-        line_chart.add('Firefox', [None, None,    0, 16.6,   25,   31, 36.4, 45.5, 46.3, 42.8, 37.1])
-        line_chart.add('Chrome',  [None, None, None, None, None, None,    0,  3.9, 10.8, 23.8, 35.3])
-        line_chart.add('IE',      [85.8, 84.6, 84.7, 74.5,   66, 58.6, 54.7, 44.8, 36.2, 26.6, 20.1])
-        line_chart.add('Others',  [14.2, 15.4, 15.3,  8.9,    9, 10.4,  8.9,  5.8,  6.7,  6.8,  7.5])
-        chart = line_chart.render_data_uri()
-        """
+        if (time_series == "Intraday" and (start_date<time_info[0].split()[0] or start_date>time_info[-1].split()[0] or end_date<time_info[0].split()[0]  or end_date>time_info[-1].split()[0])) or (time_series != "Intraday" and (start_date<time_info[0] or start_date>time_info[-1] or end_date<time_info[0] or end_date>time_info[-1])) or start_date > end_date:
+            return render_template("index.html", tickers=tickers, alert="Invalid Date / Not in Range")
 
+        actual_info = [[],[],[],[],[]]
+        counter = 0
+        if time_series != "Intraday":
+            while counter < len(time_info):
+                if time_info[counter] >= start_date and time_info[counter] <= end_date:
+                    actual_info[0].append(time_info[counter])
+                    actual_info[1].append(open_info[counter])
+                    actual_info[2].append(high_info[counter])
+                    actual_info[3].append(low_info[counter])
+                    actual_info[4].append(close_info[counter])
+                counter += 1
+            
+            time_info = actual_info[0]
+            open_info = actual_info[1]
+            high_info = actual_info[2]
+            low_info = actual_info[3]
+            close_info = actual_info[4]
+        else:
+            while counter < len(time_info):
+                if time_info[counter].split()[0] >= start_date and time_info[counter].split()[0] <= end_date:
+                    actual_info[0].append(time_info[counter])
+                    actual_info[1].append(open_info[counter])
+                    actual_info[2].append(high_info[counter])
+                    actual_info[3].append(low_info[counter])
+                    actual_info[4].append(close_info[counter])
+                counter += 1
+            
+
+            time_info = actual_info[0]
+            open_info = actual_info[1]
+            high_info = actual_info[2]
+            low_info = actual_info[3]
+            close_info = actual_info[4]
+        
+
+        chart.title = stock_chosen
+        chart.x_labels = time_info
+        chart.add('Open', open_info)
+        chart.add('High', high_info)
+        chart.add('Low', low_info)
+        chart.add('Close', close_info)
+
+        chart = chart.render_data_uri()
         return render_template("index.html", chart=chart, tickers=tickers)
 
     return render_template("index.html", tickers=tickers)

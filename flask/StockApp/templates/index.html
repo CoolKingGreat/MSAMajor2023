@@ -11,11 +11,23 @@
   </head>
   <body>
     <div class="container">
+        {% if alert %}
+        <div class="row">
+            <div class="col-8">
+                <div class="alert alert-danger" role="alert">
+                    {{alert}}
+                </div>
+            </div>
+        </div>
+        {% endif %}
         <form class="row" method="post">
             <div class="row">
                 <div class="col-8">
                     <label class="form-label">Stock Ticker: </label>
                     <select class="form-select" name="stock_ticker">
+                        {% if request.form['stock_ticker'] %}
+                        <option value="{{request.form['stock_ticker']}}" selected>{{request.form['stock_ticker']}}</option>
+                        {% endif %}
                         {% for ticker in tickers %}
                         <option value="{{ ticker }}">{{ ticker }}</option>
                         {% endfor %}
@@ -26,6 +38,9 @@
                 <div class="col-8">
                     <label class="form-label">Chart Type: </label>
                     <select class="form-select" name="chart_type">
+                        {% if request.form['chart_type'] %}
+                        <option value="{{request.form['chart_type']}}" selected>{{request.form['chart_type']}}</option>
+                        {% endif %}
                         <option value="Bar">Bar</option>
                         <option value="Line">Line</option>
                     </select>
@@ -35,11 +50,24 @@
                 <div class="col-8">
                     <label class="form-label">Time Series: </label>
                     <select class="form-select" name="time_series">
+                        {% if request.form['time_series'] %}
+                        <option value="{{request.form['time_series']}}" selected>{{request.form['time_series']}}</option>
+                        {% endif %}
                         <option value="Intraday">Intraday</option>
                         <option value="Daily">Daily</option>
                         <option value="Weekly">Weekly</option>
                         <option value="Monthly">Monthly</option>
                     </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <label class="form-label" value="">Start Date: </label>
+                    <input class="form-control" type="date" name="start_date" value="{{request.form['start_date']}}">
+                </div>
+                <div class="col-4">
+                    <label class="form-label">End Date: </label>
+                    <input class="form-control" type="date" name="end_date" value="{{request.form['end_date']}}">
                 </div>
             </div>
             <div class="row p-3 col-2">
@@ -50,7 +78,7 @@
 
         <div class="row">
             {% if chart %}
-            <div id="chart" class="w-50 p-3">
+            <div id="chart" class="col-10">
                 <embed type="image/svg+xml" src= {{ chart|safe }} />
             </div>
             {% endif %}
